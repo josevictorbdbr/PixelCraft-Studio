@@ -1,0 +1,151 @@
+import type { Dictionary } from "./en";
+
+const ownerPhrase: Record<string, string> = { project: "del proyecto", texture: "de la textura" };
+const articlePhrase: Record<string, string> = { project: "un proyecto", texture: "una textura" };
+
+export const es: Dictionary = {
+  common: {
+    cancel: "Cancelar",
+    save: "Guardar",
+    saving: "Guardando...",
+    saved: "Guardado",
+    create: "Crear",
+    creating: "Creando...",
+  },
+  settings: {
+    buttonLabel: "Configuración",
+    title: "Configuración",
+    languageLabel: "Idioma",
+  },
+  categories: {
+    blocks: "Bloques",
+    items: "Objetos",
+    armor: "Armadura",
+    gui: "GUI",
+    entities: "Entidades",
+    particles: "Partículas",
+    misc: "Misc",
+  },
+  home: {
+    newProjectButton: "Nuevo Proyecto",
+    projectsHeading: "PROYECTOS",
+    loadingProjects: "Cargando proyectos...",
+    openProjectButton: "Abrir Proyecto",
+    deleteProjectButton: "Eliminar Proyecto",
+  },
+  main: {
+    backToProjects: "Volver a Proyectos",
+    newTextureButton: "Nueva Textura",
+    importButton: "Importar",
+    searchPlaceholder: "Buscar...",
+    loadingTextures: "Cargando texturas...",
+    noResultsFor: (query: string) => `No se encontraron texturas para "${query}".`,
+    texturesFor: (label: string) => `Texturas de ${label}`,
+  },
+  project: {
+    newProjectDialogTitle: "Nuevo Proyecto",
+    namePlaceholder: "Nombre del proyecto",
+    emptyList: (newProjectButtonLabel: string) =>
+      `Aún no hay proyectos. Haz clic en "${newProjectButtonLabel}" para empezar.`,
+    modifiedOn: (date: string) => `Modificado el ${date}`,
+  },
+  texture: {
+    newTextureDialogTitle: "Nueva Textura",
+    namePlaceholder: "Nombre de la textura",
+    initialResolutionNote: (resolution: string) =>
+      `Resolución inicial: ${resolution} (transparente) - se puede cambiar despues en Redimensionar.`,
+    importDialogTitle: "Importar Textura",
+    pngFilterName: "Imagen PNG",
+    chooseFileLabel: "Elegir archivo PNG...",
+    oversizeWarning: (mb: string) =>
+      `Este archivo tiene ${mb}MB — mucho más pesado de lo habitual para pixel art. ¿Seguro que quieres importarlo igual?`,
+    oversizeAcknowledge: "Sí, importar igual",
+    importing: "Importando...",
+    emptyGrid: "Aún no hay texturas",
+    deleteAriaLabel: (name: string) => `Eliminar ${name}`,
+    deleteTooltip: "Eliminar textura",
+  },
+  editor: {
+    backToTextures: "Volver a Texturas",
+    saveAsButton: "Guardar como",
+    saveAsDialogTitle: "Guardar Textura Como",
+    saveAsResolutionNote: (width: number, height: number) => `Esto se guardará en ${width}x${height}.`,
+    loadingTexture: "Cargando textura...",
+    activeSelectionHint: "Selección activa — presiona Delete para borrar el contenido",
+    colorHeading: "COLOR",
+    selectColorAriaLabel: "Seleccionar color",
+    colorPickerTooltip: (hex: string) => `${hex} — haz clic para elegir otro color`,
+    colorPickerTitle: "Seleccionar Color",
+    opacityLabel: "Opacidad %",
+    selectButton: "Seleccionar",
+    layersHeading: "CAPAS",
+    baseLayerName: "Base",
+    propertiesHeading: "PROPIEDADES",
+    nameLabel: "Nombre:",
+    categoryLabel: "Categoría:",
+    resolutionLabel: "Resolución:",
+    resizeDialogTitle: "Redimensionar Textura",
+    widthLabel: "Ancho",
+    heightLabel: "Alto",
+    resizeNote: (min: number, max: number) =>
+      `Entre ${min} y ${max} en cada eje. Los píxeles existentes se mantienen en la misma posición; el área nueva queda transparente, y el área eliminada (si se reduce) se recorta - el dibujo no se estira.`,
+    resizing: "Redimensionando...",
+    resizeButton: "Redimensionar",
+    zoomOutAriaLabel: "Reducir zoom",
+    zoomInAriaLabel: "Aumentar zoom",
+    zoomLabel: (zoom: number) => `Zoom: ${zoom}%`,
+    gridOn: "activado",
+    gridOff: "desactivado",
+    toolbarCategories: {
+      general: "General",
+      drawing: "Dibujo",
+      shapes: "Formas",
+      transform: "Transformar",
+      selection: "Selección",
+    },
+    tools: {
+      undo: "Deshacer",
+      redo: "Rehacer",
+      pencil: "Lápiz",
+      eraser: "Borrador",
+      bucket: "Bote de pintura",
+      eyedropper: "Cuentagotas",
+      line: "Línea",
+      rectangle: "Rectángulo",
+      mirrorHorizontal: "Espejo Horizontal",
+      mirrorVertical: "Espejo Vertical",
+      rotate: "Rotar",
+      resize: "Redimensionar",
+      selection: "Selección",
+    },
+  },
+  errors: {
+    name_empty: (p: Record<string, string>) =>
+      `El nombre ${ownerPhrase[p.entity] ?? p.entity} no puede estar vacío.`,
+    name_has_spaces: (p: Record<string, string>) =>
+      `El nombre ${ownerPhrase[p.entity] ?? p.entity} no puede empezar ni terminar con espacios.`,
+    name_invalid_chars: (p: Record<string, string>) =>
+      `El nombre ${ownerPhrase[p.entity] ?? p.entity} contiene caracteres inválidos (${p.chars}).`,
+    name_reserved: (p: Record<string, string>) =>
+      `"${p.name}" es un nombre reservado por el sistema y no se puede usar.`,
+    already_exists: (p: Record<string, string>) =>
+      `Ya existe ${articlePhrase[p.entity] ?? p.entity} con ese nombre: "${p.name}".`,
+    invalid_uuid: () => "Identificador inválido.",
+    project_not_found: () => "Proyecto no encontrado.",
+    documents_dir_not_found: () => "No se pudo localizar la carpeta de Documentos del sistema.",
+    project_json_missing: () => "No se encontró project.json.",
+    project_json_corrupted: () => "project.json está corrupto.",
+    invalid_category: (p: Record<string, string>) => `Categoría inválida: "${p.category}".`,
+    invalid_resolution: (p: Record<string, string>) =>
+      `La resolución debe estar entre ${p.min} y ${p.max} en cada eje (recibido ${p.width}x${p.height}).`,
+    texture_not_found: (p: Record<string, string>) =>
+      `Textura "${p.name}" no encontrada en "${p.category}".`,
+    invalid_file_name: () => "Nombre de archivo inválido.",
+    pixel_data_size_mismatch: (p: Record<string, string>) =>
+      `Tamaño de datos de píxeles inesperado (esperado ${p.expected}, recibido ${p.received}).`,
+    image_build_failed: () => "No se pudo construir la imagen a partir de los píxeles.",
+    image_decode_error: (p: Record<string, string>) => `Archivo de imagen inválido o corrupto: ${p.detail}`,
+    io_error: (p: Record<string, string>) => `Error de archivo: ${p.detail}`,
+    serialization_error: (p: Record<string, string>) => `Error al leer o escribir datos: ${p.detail}`,
+  },
+};

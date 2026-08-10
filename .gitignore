@@ -1,0 +1,21 @@
+# Node / Frontend
+node_modules/
+dist/
+dist-ssr/
+.vite/
+.vite-temp/   
+*.local
+
+# Env / segredos
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Testes locais
+test-projects/

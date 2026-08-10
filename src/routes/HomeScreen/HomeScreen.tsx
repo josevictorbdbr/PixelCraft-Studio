@@ -1,0 +1,199 @@
+import { useEffect, useState } from "react";
+import { Settings, Plus, FolderOpen, Trash2, Loader2 } from "lucide-react";
+import { useUIStore } from "../../store/useUIStore";
+import { useProjectStore } from "../../store/useProjectStore";
+import { useSettingsStore } from "../../store/useSettingsStore";
+import { useTranslation } from "../../i18n/useTranslation";
+import { translateError } from "../../i18n/errors";
+import { IconButton } from "../../components/common/IconButton";
+import { Button } from "../../components/common/Button";
+import { ProjectList } from "../../components/project/ProjectList";
+import { NewProjectDialog } from "../../components/project/NewProjectDialog";
+import type { ProjectSummary } from "../../types/project";
+import homeBg from "../../assets/homescreen-bg.webp";
+import {
+  createProject,
+  deleteProject,
+  listProjects,
+  openProject,
+} from "../../services/projectService";
+
+const APP_VERSION = "v0.1.0";
+
+export function HomeScreen() {
+  const t = useTranslation();
+  const goTo = useUIStore((s) => s.goTo);
+  const setActiveProject = useProjectStore((s) => s.setActiveProject);
+  const openSettings = useSettingsStore((s) => s.openSettings);
+
+  const [projects, setProjects] = useState<ProjectSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [listError, setListError] = useState<string | null>(null);
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  const [showNewProjectDialog, setShowNewProjectDialog] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
+
+  // Ao abrir o programa: carregar os projetos existentes automaticamente.
+  useEffect(() => {
+    let cancelled = false;
+
+    listProjects()
+      .then((result) => {
+        if (!cancelled) setProjects(result);
+      })
+      .catch((err) => {
+        if (!cancelled) setListError(translateError(t, err));
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleCreateProject = async (name: string) => {
+    setIsCreating(true);
+    setCreateError(null);
+    try {
+      const created = await createProject(name);
+      setProjects((prev) => [created, ...prev]);
+      setShowNewProjectDialog(false);
+    } catch (err) {
+      setCreateError(translateError(t, err));
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleDeleteProject = async () => {
+    if (!selectedId) return;
+    setActionError(null);
+    try {
+      await deleteProject(selectedId);
+      setProjects((prev) => prev.filter((p) => p.id !== selectedId));
+      setSelectedId(null);
+    } catch (err) {
+      setActionError(translateError(t, err));
+    }
+  };
+
+  const handleOpenProject = async (id: string) => {
+    setActionError(null);
+    try {
+      const manifest = await openProject(id);
+      setActiveProject(manifest);
+      goTo("main");
+    } catch (err) {
+      setActionError(translateError(t, err));
+    }
+  };
+
+  return (
+    <div
+      className="h-screen flex flex-col bg-canvas"
+      style={{
+        backgroundImage: `linear-gradient(rgba(30,30,30,0.8), rgba(30,30,30,0.8)), url(${homeBg})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      {/* Topo */}
+      <header className="flex items-center justify-between px-panel h-14 border-b border-line shrink-0 bg-canvas">
+        <span className="text-caption text-muted tracking-wide">PixelCraft Studio</span>
+        <IconButton icon={<Settings size={18} />} label={t.settings.buttonLabel} onClick={openSettings} />
+      </header>
+
+      {/* Centro */}
+      <main className="flex-1 flex flex-col items-center px-panel py-8 min-h-0 max-w-3xl w-full mx-auto overflow-y-auto">
+        {/* Hero: marca + acao principal, inspirado no concept enviado */}
+        <div className="flex flex-col items-center text-center shrink-0 mb-10">
+          <div className="flex gap-1 mb-4" aria-hidden>
+            <span className="size-3 bg-accent" />
+            <span className="size-3 bg-accent/60" />
+            <span className="size-3 bg-accent" />
+          </div>
+          <h1 className="font-display text-ink text-2xl leading-relaxed mb-8">
+            PixelCraft Studio
+          </h1>
+          <Button
+            variant="outline"
+            className="h-auto py-4 px-8"
+            onClick={() => {
+              setCreateError(null);
+              setShowNewProjectDialog(true);
+            }}
+          >
+            <Plus size={18} />
+            {t.home.newProjectButton}
+          </Button>
+        </div>
+
+        {/* Lista de projetos existentes - painel transparente, ainda escuro,
+            para deixar o fundo aparecer por baixo. */}
+        <div className="w-full flex flex-col flex-1 min-h-0">
+          <h2 className="text-caption text-muted tracking-wide mb-2">{t.home.projectsHeading}</h2>
+
+          <div className="flex-1 flex flex-col border border-line rounded-none overflow-hidden min-h-0 bg-panel/50 backdrop-blur-sm">
+            {isLoading ? (
+              <div className="flex-1 flex items-center justify-center gap-2 text-muted text-body">
+                <Loader2 size={16} className="animate-spin" />
+                {t.home.loadingProjects}
+              </div>
+            ) : listError ? (
+              <div className="flex-1 flex items-center justify-center text-red-400 text-body text-center px-4">
+                {listError}
+              </div>
+            ) : (
+              <ProjectList
+                projects={projects}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+                onOpen={handleOpenProject}
+                newProjectButtonLabel={t.home.newProjectButton}
+              />
+            )}
+          </div>
+
+          {actionError && (
+            <p className="text-caption text-red-400 text-center mt-2">{actionError}</p>
+          )}
+
+          <div className="flex justify-center gap-button-gap mt-4">
+            <Button
+              variant="ghost"
+              onClick={() => selectedId && handleOpenProject(selectedId)}
+              disabled={!selectedId}
+            >
+              <FolderOpen size={16} />
+              {t.home.openProjectButton}
+            </Button>
+            <Button variant="ghost" onClick={handleDeleteProject} disabled={!selectedId}>
+              <Trash2 size={16} />
+              {t.home.deleteProjectButton}
+            </Button>
+          </div>
+        </div>
+      </main>
+
+      {/* Rodape */}
+      <footer className="px-panel py-2 border-t border-line shrink-0 bg-canvas">
+        <span className="text-caption text-muted">PixelCraft Studio — {APP_VERSION}</span>
+      </footer>
+
+      {showNewProjectDialog && (
+        <NewProjectDialog
+          onConfirm={handleCreateProject}
+          onCancel={() => setShowNewProjectDialog(false)}
+          isSubmitting={isCreating}
+          error={createError}
+        />
+      )}
+    </div>
+  );
+}

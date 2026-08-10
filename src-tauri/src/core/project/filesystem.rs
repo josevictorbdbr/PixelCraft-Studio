@@ -1,0 +1,89 @@
+use std::fs;
+use std::path::{Path, PathBuf};
+
+use serde::Serialize;
+use tauri::{AppHandle, Manager};
+
+use super::super::error::AppError;
+use super::project_model::{ProjectManifest, DEFAULT_CATEGORIES};
+
+const APP_FOLDER_NAME: &str = "PixelCraft Studio";
+const PROJECTS_FOLDER_NAME: &str = "Projects";
+const MANIFEST_FILE_NAME: &str = "project.json";
+
+/// Resolve `Documentos/PixelCraft Studio/Projects`, criando a pasta caso
+/// ainda nao exista (primeira execucao do programa).
+pub fn projects_root(app: &AppHandle) -> Result<PathBuf, AppError> {
+    let documents = app
+        .path()
+        .document_dir()
+        .map_err(|_| AppError::DocumentsDirNotFound)?;
+
+    let root = documents.join(APP_FOLDER_NAME).join(PROJECTS_FOLDER_NAME);
+    fs::create_dir_all(&root)?;
+    Ok(root)
+}
+
+/// Caminho da pasta de um projeto especifico dentro da raiz de projetos.
+pub fn project_dir(root: &Path, project_name: &str) -> PathBuf {
+    root.join(project_name)
+}
+
+/// Caminho do project.json dentro da pasta de um projeto.
+pub fn manifest_path(project_dir: &Path) -> PathBuf {
+    project_dir.join(MANIFEST_FILE_NAME)
+}
+
+/// Cria a pasta do projeto e todas as subpastas padrao de texturas.
+pub fn create_project_structure(project_dir: &Path) -> Result<(), AppError> {
+    fs::create_dir_all(project_dir)?;
+    for category in DEFAULT_CATEGORIES {
+        fs::create_dir_all(project_dir.join("textures").join(category))?;
+    }
+    Ok(())
+}
+
+/// Garante que a estrutura de pastas de um projeto existente esta completa,
+/// criando o que estiver faltando (projeto criado em versao anterior, pasta
+/// apagada manualmente pelo usuario, etc).
+pub fn ensure_project_structure(project_dir: &Path) -> Result<(), AppError> {
+    create_project_structure(project_dir)
+}
+
+/// Grava um valor serializavel em disco de forma atomica: escreve num
+/// arquivo temporario e so entao renomeia por cima do destino final,
+/// evitando corrupcao caso o processo seja interrompido no meio da escrita.
+pub fn write_json_atomic<T: Serialize>(path: &Path, value: &T) -> Result<(), AppError> {
+    let json = serde_json::to_string_pretty(value)?;
+    let tmp_path = path.with_extension("tmp");
+    fs::write(&tmp_path, json)?;
+    fs::rename(&tmp_path, path)?;
+    Ok(())
+}
+
+/// Le e desserializa o project.json de uma pasta de projeto.
+pub fn read_manifest(project_dir: &Path) -> Result<ProjectManifest, AppError> {
+    let path = manifest_path(project_dir);
+    let content = fs::read_to_string(&path)
+        .map_err(|_| AppError::ProjectJsonMissing)?;
+    serde_json::from_str(&content)
+        .map_err(|_| AppError::ProjectJsonCorrupted)
+}
+
+/// Lista as subpastas diretas de `root` (cada uma e um possivel projeto).
+pub fn list_project_dirs(root: &Path) -> Result<Vec<PathBuf>, AppError> {
+    let mut dirs = Vec::new();
+    for entry in fs::read_dir(root)? {
+        let entry = entry?;
+        if entry.file_type()?.is_dir() {
+            dirs.push(entry.path());
+        }
+    }
+    Ok(dirs)
+}
+
+/// Remove a pasta de um projeto e todo o seu conteudo.
+pub fn delete_project_dir(project_dir: &Path) -> Result<(), AppError> {
+    fs::remove_dir_all(project_dir)?;
+    Ok(())
+}

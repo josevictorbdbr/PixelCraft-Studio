@@ -1,0 +1,26 @@
+/**
+ * Design tokens do PixelCraft Studio.
+ * Fonte: documento "Detalhes UI/UX".
+ * Tema escuro unico na v1 - nenhuma outra paleta deve ser adicionada aqui.
+ */
+@theme {
+  /* Cores -> geram utilitarios bg-*, text-*, border-* automaticamente */
+  --color-canvas: #1e1e1e;   /* Fundo principal */
+  --color-panel: #2a2a2a;    /* Fundo de paineis/barras */
+  --color-line: #3a3a3a;     /* Bordas/divisorias */
+  --color-ink: #e8e8e8;      /* Texto principal */
+  --color-muted: #9a9a9a;    /* Texto secundario */
+  --color-accent: #22d3ee;   /* Unica cor de destaque da interface (ciano, estilo diamante do Minecraft) */
+
+  /* Tipografia */
+  --font-sans: "Segoe UI", Inter, system-ui, sans-serif;
+  --font-display: "Press Start 2P", monospace;
+  --text-caption: 12px;
+  --text-body: 14px;
+  --text-section-title: 16px;
+
+  /* Espacamento */
+  --spacing-panel: 16px;
+  --spacing-thumb-gap: 12px;
+  --spacing-button-gap: 12px;
+}
