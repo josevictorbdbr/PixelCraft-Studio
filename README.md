@@ -1,3 +1,3 @@
 # PixelCraft Studio
 
-Editor de texturas para Minecraft (Tauri + React + TypeScript + TailwindCSS).
+A Minecraft textures Creator (Tauri + React + TypeScript + TailwindCSS).
