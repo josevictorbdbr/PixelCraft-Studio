@@ -5,7 +5,7 @@ use commands::project_commands::{create_project, delete_project, list_projects, 
 use commands::settings_commands::{load_settings, save_settings};
 use commands::texture_commands::{
     create_texture, delete_texture, file_size_bytes, import_texture, list_textures,
-    load_texture_pixels, resize_texture, save_texture, save_texture_as,
+    load_texture_layers, resize_texture, save_texture_layers, save_texture_layers_as,
 };
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -32,10 +32,10 @@ pub fn run() {
       delete_texture,
       import_texture,
       file_size_bytes,
-      load_texture_pixels,
+      load_texture_layers,
       resize_texture,
-      save_texture,
-      save_texture_as,
+      save_texture_layers,
+      save_texture_layers_as,
       load_settings,
       save_settings,
     ])

@@ -88,6 +88,11 @@ export const ptBR: Dictionary = {
     selectButton: "Selecionar",
     layersHeading: "CAMADAS",
     baseLayerName: "Base",
+    addLayerButton: "Adicionar Camada",
+    toggleLayerVisibilityAriaLabel: (name: string) => `Alternar visibilidade da camada ${name}`,
+    moveLayerUpAriaLabel: "Mover camada para cima",
+    moveLayerDownAriaLabel: "Mover camada para baixo",
+    deleteLayerAriaLabel: (name: string) => `Excluir camada ${name}`,
     propertiesHeading: "PROPRIEDADES",
     nameLabel: "Nome:",
     categoryLabel: "Categoria:",
@@ -155,5 +160,8 @@ export const ptBR: Dictionary = {
     image_decode_error: (p: Record<string, string>) => `Arquivo de imagem inválido ou corrompido: ${p.detail}`,
     io_error: (p: Record<string, string>) => `Erro de arquivo: ${p.detail}`,
     serialization_error: (p: Record<string, string>) => `Erro ao ler ou gravar dados: ${p.detail}`,
+    layer_limit_reached: (p: Record<string, string>) =>
+      `Você pode ter no máximo ${p.max} camadas por textura.`,
+    empty_layer_list: () => "Uma textura precisa ter pelo menos uma camada.",
   },
 };

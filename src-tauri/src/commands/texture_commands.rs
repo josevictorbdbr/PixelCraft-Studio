@@ -2,7 +2,7 @@ use tauri::AppHandle;
 
 use crate::core::error::AppError;
 use crate::core::project::{projects_root, ProjectManager};
-use crate::core::texture::{PixelBuffer, TextureManager, TextureSummary};
+use crate::core::texture::{LayerInput, TextureLayers, TextureManager, TextureSummary};
 
 /// Tamanho em bytes de um arquivo (usado pelo frontend antes de importar,
 /// para avisar se a imagem escolhida for pesada para pixel art).
@@ -19,7 +19,8 @@ pub fn list_textures(app: AppHandle, project_id: String) -> Result<Vec<TextureSu
     TextureManager::list(&project_dir)
 }
 
-/// Cria uma textura nova (canvas transparente) numa categoria do projeto.
+/// Cria uma textura nova (canvas transparente, camada unica "Base") numa
+/// categoria do projeto.
 #[tauri::command]
 pub fn create_texture(
     app: AppHandle,
@@ -32,57 +33,64 @@ pub fn create_texture(
     TextureManager::create(&project_dir, &category, &name)
 }
 
-/// Le os pixels crus de uma textura, para o Editor carregar (sem passar
-/// por <img>/asset protocol - ver decisions.md).
+/// Le todas as camadas (com pixels) de uma textura, para o Editor carregar
+/// (sem passar por <img>/asset protocol - ver decisions.md). Migra
+/// automaticamente do formato antigo (PNG unico) se for o caso.
 #[tauri::command]
-pub fn load_texture_pixels(
+pub fn load_texture_layers(
     app: AppHandle,
     project_id: String,
     category: String,
     name: String,
-) -> Result<PixelBuffer, AppError> {
+) -> Result<TextureLayers, AppError> {
     let root = projects_root(&app)?;
     let project_dir = ProjectManager::dir_by_id(&root, &project_id)?;
-    TextureManager::load_pixels(&project_dir, &category, &name)
+    TextureManager::load_layers(&project_dir, &category, &name)
 }
 
-/// Grava os pixels editados no Editor de volta no arquivo PNG da textura.
+/// Grava o estado completo das camadas do Editor de volta no disco -
+/// chamado tanto pelo autosave de pixels quanto por operacoes estruturais
+/// (add/remover/reordenar/renomear camada, mudar visibilidade/opacidade),
+/// que acontecem em memoria no Editor e chegam aqui como uma lista completa.
 #[tauri::command]
 #[allow(clippy::too_many_arguments)]
-pub fn save_texture(
+pub fn save_texture_layers(
     app: AppHandle,
     project_id: String,
     category: String,
     name: String,
     width: u32,
     height: u32,
-    pixels: Vec<u8>,
+    active_layer_id: String,
+    layers: Vec<LayerInput>,
 ) -> Result<(), AppError> {
     let root = projects_root(&app)?;
     let project_dir = ProjectManager::dir_by_id(&root, &project_id)?;
-    TextureManager::save_pixels(&project_dir, &category, &name, width, height, &pixels)
+    TextureManager::save_layers(&project_dir, &category, &name, width, height, &active_layer_id, &layers)
 }
 
-/// "Salvar como": grava os pixels atuais do Editor como uma textura NOVA
+/// "Salvar como": grava as camadas atuais do Editor como uma textura NOVA
 /// (nome/categoria escolhidos pelo usuario) - nao sobrescreve a textura
 /// original.
 #[tauri::command]
 #[allow(clippy::too_many_arguments)]
-pub fn save_texture_as(
+pub fn save_texture_layers_as(
     app: AppHandle,
     project_id: String,
     category: String,
     name: String,
     width: u32,
     height: u32,
-    pixels: Vec<u8>,
+    active_layer_id: String,
+    layers: Vec<LayerInput>,
 ) -> Result<TextureSummary, AppError> {
     let root = projects_root(&app)?;
     let project_dir = ProjectManager::dir_by_id(&root, &project_id)?;
-    TextureManager::save_as(&project_dir, &category, &name, width, height, &pixels)
+    TextureManager::save_layers_as(&project_dir, &category, &name, width, height, &active_layer_id, &layers)
 }
 
-/// Redimensiona a tela de uma textura existente (16 a 1024 em cada eixo).
+/// Redimensiona a tela de uma textura existente (16 a 1024 em cada eixo) -
+/// aplica em todas as camadas.
 #[tauri::command]
 #[allow(clippy::too_many_arguments)]
 pub fn resize_texture(

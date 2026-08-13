@@ -89,6 +89,11 @@ export const en = {
     selectButton: "Select",
     layersHeading: "LAYERS",
     baseLayerName: "Base",
+    addLayerButton: "Add Layer",
+    toggleLayerVisibilityAriaLabel: (name: string) => `Toggle visibility of layer ${name}`,
+    moveLayerUpAriaLabel: "Move layer up",
+    moveLayerDownAriaLabel: "Move layer down",
+    deleteLayerAriaLabel: (name: string) => `Delete layer ${name}`,
     propertiesHeading: "PROPERTIES",
     nameLabel: "Name:",
     categoryLabel: "Category:",
@@ -159,6 +164,9 @@ export const en = {
     image_decode_error: (p: Record<string, string>) => `Invalid or corrupted image file: ${p.detail}`,
     io_error: (p: Record<string, string>) => `File error: ${p.detail}`,
     serialization_error: (p: Record<string, string>) => `Error reading or writing data: ${p.detail}`,
+    layer_limit_reached: (p: Record<string, string>) =>
+      `You can have at most ${p.max} layers per texture.`,
+    empty_layer_list: () => "A texture must have at least one layer.",
   },
 };
 

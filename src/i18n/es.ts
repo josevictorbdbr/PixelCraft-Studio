@@ -80,6 +80,11 @@ export const es: Dictionary = {
     selectButton: "Seleccionar",
     layersHeading: "CAPAS",
     baseLayerName: "Base",
+    addLayerButton: "Añadir Capa",
+    toggleLayerVisibilityAriaLabel: (name: string) => `Alternar visibilidad de la capa ${name}`,
+    moveLayerUpAriaLabel: "Subir capa",
+    moveLayerDownAriaLabel: "Bajar capa",
+    deleteLayerAriaLabel: (name: string) => `Eliminar capa ${name}`,
     propertiesHeading: "PROPIEDADES",
     nameLabel: "Nombre:",
     categoryLabel: "Categoría:",
@@ -147,5 +152,8 @@ export const es: Dictionary = {
     image_decode_error: (p: Record<string, string>) => `Archivo de imagen inválido o corrupto: ${p.detail}`,
     io_error: (p: Record<string, string>) => `Error de archivo: ${p.detail}`,
     serialization_error: (p: Record<string, string>) => `Error al leer o escribir datos: ${p.detail}`,
+    layer_limit_reached: (p: Record<string, string>) =>
+      `Puedes tener como máximo ${p.max} capas por textura.`,
+    empty_layer_list: () => "Una textura debe tener al menos una capa.",
   },
 };

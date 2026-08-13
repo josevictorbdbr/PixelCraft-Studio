@@ -45,6 +45,11 @@ pub enum AppError {
     ImageDecodeError { detail: String },
     Io { detail: String },
     Serialization { detail: String },
+    /// Editor tentou salvar mais camadas do que o teto permitido (6).
+    LayerLimitReached { max: usize },
+    /// Editor tentou salvar uma textura sem nenhuma camada (deve sempre
+    /// sobrar pelo menos 1 - o Editor bloqueia excluir a ultima camada).
+    EmptyLayerList,
 }
 
 impl AppError {
@@ -69,6 +74,8 @@ impl AppError {
             AppError::ImageDecodeError { .. } => "image_decode_error",
             AppError::Io { .. } => "io_error",
             AppError::Serialization { .. } => "serialization_error",
+            AppError::LayerLimitReached { .. } => "layer_limit_reached",
+            AppError::EmptyLayerList => "empty_layer_list",
         }
     }
 
@@ -110,6 +117,9 @@ impl AppError {
             | AppError::Io { detail }
             | AppError::Serialization { detail } => {
                 map.insert("detail", detail.clone());
+            }
+            AppError::LayerLimitReached { max } => {
+                map.insert("max", max.to_string());
             }
             _ => {}
         }

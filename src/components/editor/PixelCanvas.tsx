@@ -13,9 +13,10 @@ interface PixelCoords {
 }
 
 /**
- * Canvas de edicao de verdade: desenha o ImageData do PixelEditorEngine
- * escalado (sem suavizacao) e traduz eventos de ponteiro em coordenadas
- * de pixel da textura, delegando para o engine.
+ * Canvas de edicao de verdade: desenha a COMPOSICAO de todas as camadas
+ * do PixelEditorEngine escalada (sem suavizacao) e traduz eventos de
+ * ponteiro em coordenadas de pixel da textura, delegando para o engine
+ * (que aplica na camada ativa).
  */
 export function PixelCanvas({ engine, zoom, showGrid }: PixelCanvasProps) {
   const displayRef = useRef<HTMLCanvasElement>(null);
@@ -29,12 +30,12 @@ export function PixelCanvas({ engine, zoom, showGrid }: PixelCanvasProps) {
 
     if (!offscreenRef.current) offscreenRef.current = document.createElement("canvas");
     const offscreen = offscreenRef.current;
-    offscreen.width = engine.canvas.width;
-    offscreen.height = engine.canvas.height;
-    offscreen.getContext("2d")?.putImageData(engine.canvas.getImageData(), 0, 0);
+    offscreen.width = engine.width;
+    offscreen.height = engine.height;
+    offscreen.getContext("2d")?.putImageData(engine.getComposite(), 0, 0);
 
-    const displayWidth = engine.canvas.width * pixelSize;
-    const displayHeight = engine.canvas.height * pixelSize;
+    const displayWidth = engine.width * pixelSize;
+    const displayHeight = engine.height * pixelSize;
     display.width = displayWidth;
     display.height = displayHeight;
 
@@ -47,13 +48,13 @@ export function PixelCanvas({ engine, zoom, showGrid }: PixelCanvasProps) {
     if (showGrid) {
       ctx.strokeStyle = "rgba(0,0,0,0.35)";
       ctx.lineWidth = 1;
-      for (let x = 0; x <= engine.canvas.width; x++) {
+      for (let x = 0; x <= engine.width; x++) {
         ctx.beginPath();
         ctx.moveTo(x * pixelSize + 0.5, 0);
         ctx.lineTo(x * pixelSize + 0.5, displayHeight);
         ctx.stroke();
       }
-      for (let y = 0; y <= engine.canvas.height; y++) {
+      for (let y = 0; y <= engine.height; y++) {
         ctx.beginPath();
         ctx.moveTo(0, y * pixelSize + 0.5);
         ctx.lineTo(displayWidth, y * pixelSize + 0.5);
@@ -102,8 +103,7 @@ export function PixelCanvas({ engine, zoom, showGrid }: PixelCanvasProps) {
     };
   };
 
-  const isInsideCanvas = (p: PixelCoords) =>
-    p.x >= 0 && p.y >= 0 && p.x < engine.canvas.width && p.y < engine.canvas.height;
+  const isInsideCanvas = (p: PixelCoords) => p.x >= 0 && p.y >= 0 && p.x < engine.width && p.y < engine.height;
 
   const updateHover = (p: PixelCoords) => {
     if (!isInsideCanvas(p)) {
@@ -117,8 +117,8 @@ export function PixelCanvas({ engine, zoom, showGrid }: PixelCanvasProps) {
     <div
       className="relative outline outline-1 outline-line"
       style={{
-        width: engine.canvas.width * pixelSize,
-        height: engine.canvas.height * pixelSize,
+        width: engine.width * pixelSize,
+        height: engine.height * pixelSize,
         backgroundColor: "#ffffff",
         backgroundImage:
           "linear-gradient(45deg, #d9d9d9 25%, transparent 25%), linear-gradient(-45deg, #d9d9d9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #d9d9d9 75%), linear-gradient(-45deg, transparent 75%, #d9d9d9 75%)",

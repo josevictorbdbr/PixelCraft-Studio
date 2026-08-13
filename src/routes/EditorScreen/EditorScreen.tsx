@@ -16,11 +16,11 @@ import { SaveAsTextureDialog } from "../../components/editor/SaveAsTextureDialog
 import { PropertiesPanel } from "../../components/editor/PropertiesPanel";
 import { PixelEditorEngine } from "../../editor/PixelEditorEngine";
 import {
-  loadTexturePixels,
+  loadTextureLayers,
   resizeTexture,
-  saveTexture,
-  saveTextureAs,
-  type PixelBuffer,
+  saveTextureLayers,
+  saveTextureLayersAs,
+  type TextureLayersPayload,
 } from "../../services/textureService";
 import type { CategoryId } from "../../types/texture";
 import { AutosaveService } from "../../services/autosaveService";
@@ -80,11 +80,11 @@ export function EditorScreen() {
     goTo("main");
   }, [clearActiveTexture, goTo]);
 
-  /** Grava os pixels atuais no disco. Lanca erro para quem chamar decidir como tratar. */
+  /** Grava o estado completo das camadas no disco. Lanca erro para quem chamar decidir como tratar. */
   const flushSave = useCallback(
     async (eng: PixelEditorEngine, projectId: string, category: string, name: string) => {
-      const data = eng.canvas.getImageData();
-      await saveTexture(projectId, category, name, data.width, data.height, data.data);
+      const payload = eng.toSavePayload();
+      await saveTextureLayers(projectId, category, name, payload.width, payload.height, payload.activeLayerId, payload.layers);
       eng.markSaved();
       bump();
     },
@@ -102,15 +102,15 @@ export function EditorScreen() {
   );
 
   /**
-   * Monta um PixelEditorEngine novo a partir de pixels crus, com os
-   * callbacks (conta-gotas, autosave) ja conectados. Reaproveitado tanto
-   * no carregamento inicial quanto depois de um redimensionamento (o
-   * arquivo muda de tamanho, entao o engine precisa ser reconstruido).
+   * Monta um PixelEditorEngine novo a partir das camadas carregadas do
+   * backend, com os callbacks (conta-gotas, autosave) ja conectados.
+   * Reaproveitado tanto no carregamento inicial quanto depois de um
+   * redimensionamento (o arquivo muda de tamanho, entao o engine precisa
+   * ser reconstruido).
    */
-  const buildEngineFromBuffer = useCallback(
-    (buffer: PixelBuffer, projectId: string, category: string, name: string) => {
-      const data = new ImageData(new Uint8ClampedArray(buffer.pixels), buffer.width, buffer.height);
-      const newEngine = new PixelEditorEngine(buffer.width, buffer.height, data);
+  const buildEngineFromLayers = useCallback(
+    (payload: TextureLayersPayload, projectId: string, category: string, name: string) => {
+      const newEngine = new PixelEditorEngine(payload.width, payload.height, payload.layers, payload.activeLayerId);
       newEngine.onColorPicked = (color) => {
         setActiveColor(rgbaToHex(color));
         setActiveAlpha(color[3]);
@@ -130,7 +130,7 @@ export function EditorScreen() {
     [setActiveColor, setActiveAlpha, bump, performSave],
   );
 
-  // Carrega os pixels reais da textura.
+  // Carrega as camadas reais da textura.
   // O cleanup salva imediatamente o que estava sendo editado antes de
   // trocar de textura ou sair do Editor, se houver algo nao salvo
   useEffect(() => {
@@ -144,13 +144,13 @@ export function EditorScreen() {
     engineRef.current = null;
     setLoadError(null);
 
-    loadTexturePixels(projectId, category, name)
-      .then((buffer) => {
+    loadTextureLayers(projectId, category, name)
+      .then((payload) => {
         if (cancelled) return;
-        const newEngine = buildEngineFromBuffer(buffer, projectId, category, name);
+        const newEngine = buildEngineFromLayers(payload, projectId, category, name);
         engineRef.current = newEngine;
         setEngine(newEngine);
-        setZoom(computeDefaultZoom(buffer.width, buffer.height));
+        setZoom(computeDefaultZoom(payload.width, payload.height));
       })
       .catch((err) => {
         if (!cancelled) setLoadError(translateError(t, err));
@@ -209,11 +209,11 @@ export function EditorScreen() {
         }
         await resizeTexture(projectId, category, name, width, height);
 
-        const buffer = await loadTexturePixels(projectId, category, name);
-        const newEngine = buildEngineFromBuffer(buffer, projectId, category, name);
+        const payload = await loadTextureLayers(projectId, category, name);
+        const newEngine = buildEngineFromLayers(payload, projectId, category, name);
         engineRef.current = newEngine;
         setEngine(newEngine);
-        setZoom(computeDefaultZoom(buffer.width, buffer.height));
+        setZoom(computeDefaultZoom(payload.width, payload.height));
         setShowResizeDialog(false);
       } catch (err) {
         setResizeError(translateError(t, err));
@@ -221,10 +221,10 @@ export function EditorScreen() {
         setIsResizing(false);
       }
     },
-    [engine, activeProject, activeTexture, flushSave, buildEngineFromBuffer, setZoom],
+    [engine, activeProject, activeTexture, flushSave, buildEngineFromLayers, setZoom],
   );
 
-  // "Salvar como": grava os pixels atuais numa textura NOVA (nome/categoria
+  // "Salvar como": grava as camadas atuais numa textura NOVA (nome/categoria
   // escolhidos no dialog) e passa a editar esse arquivo novo - marca o
   // engine atual como salvo ANTES de trocar a textura ativa, para o efeito
   // de troca de textura (useEffect acima) nao tentar re-salvar por cima do
@@ -237,14 +237,15 @@ export function EditorScreen() {
       setSaveAsError(null);
       try {
         autosaveRef.current.cancel();
-        const data = engine.canvas.getImageData();
-        const created = await saveTextureAs(
+        const payload = engine.toSavePayload();
+        const created = await saveTextureLayersAs(
           activeProject.id,
           category,
           name,
-          data.width,
-          data.height,
-          data.data,
+          payload.width,
+          payload.height,
+          payload.activeLayerId,
+          payload.layers,
         );
         engine.markSaved();
         setActiveTexture(created);
@@ -383,11 +384,11 @@ export function EditorScreen() {
         </div>
 
         <aside className="w-56 shrink-0 border-l border-line p-panel flex flex-col gap-6 overflow-y-auto">
-          <LayerPanel />
+          {engine && <LayerPanel engine={engine} />}
           <PropertiesPanel
             name={activeTexture.name}
             category={activeTexture.category}
-            dimensions={engine ? { width: engine.canvas.width, height: engine.canvas.height } : null}
+            dimensions={engine ? { width: engine.width, height: engine.height } : null}
           />
         </aside>
       </div>
@@ -407,8 +408,8 @@ export function EditorScreen() {
 
       {showResizeDialog && engine && (
         <ResizeTextureDialog
-          initialWidth={engine.canvas.width}
-          initialHeight={engine.canvas.height}
+          initialWidth={engine.width}
+          initialHeight={engine.height}
           onCancel={() => {
             setShowResizeDialog(false);
             setResizeError(null);
@@ -422,8 +423,8 @@ export function EditorScreen() {
       {showSaveAsDialog && engine && (
         <SaveAsTextureDialog
           defaultCategory={activeTexture.category}
-          currentWidth={engine.canvas.width}
-          currentHeight={engine.canvas.height}
+          currentWidth={engine.width}
+          currentHeight={engine.height}
           onCancel={() => {
             setShowSaveAsDialog(false);
             setSaveAsError(null);
