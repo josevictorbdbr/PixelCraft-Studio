@@ -5,7 +5,7 @@ import type { TextureSummary } from "../types/texture";
  * Unico ponto de contato com os Tauri commands de textura.
  * As chaves aqui sao camelCase de proposito: o Tauri converte
  * automaticamente para os parametros snake_case do lado Rust
- * (project_id, source_path, active_layer_id).
+ * (project_id, source_path, active_layer_id, destination_path).
  */
 
 export function listTextures(projectId: string): Promise<TextureSummary[]> {
@@ -34,6 +34,20 @@ export function importTexture(
   sourcePath: string,
 ): Promise<TextureSummary> {
   return invoke("import_texture", { projectId, category, sourcePath });
+}
+
+/**
+ * Exporta o PNG final (composto) de uma textura para um caminho qualquer
+ * escolhido pelo usuario (dialog nativo "Salvar como") - nao mexe em
+ * nada do projeto, so copia o arquivo pra fora.
+ */
+export function exportTexture(
+  projectId: string,
+  category: string,
+  name: string,
+  destinationPath: string,
+): Promise<void> {
+  return invoke("export_texture", { projectId, category, name, destinationPath });
 }
 
 /** Tamanho em bytes de um arquivo no disco - usado antes de importar, para
@@ -74,8 +88,8 @@ export function loadTextureLayers(
 /**
  * Grava o estado completo das camadas de volta no disco - usado tanto
  * pelo autosave de pixels quanto por qualquer operacao estrutural
- * (add/remover/reordenar/renomear camada, visibilidade, opacidade): tudo
- * isso acontece em memoria no engine e chega aqui como uma lista completa.
+ * (add/remover/reordenar camada, visibilidade, opacidade): tudo isso
+ * acontece em memoria no engine e chega aqui como uma lista completa.
  */
 export function saveTextureLayers(
   projectId: string,

@@ -194,6 +194,14 @@ pub fn resize_layer_canvas(texture_dir: &Path, layer_id: &str, new_width: u32, n
     Ok(())
 }
 
+/// Copia o PNG composto (resultado final achatado) de uma textura para um
+/// destino qualquer escolhido pelo usuario (Exportar) - nao mexe em nada
+/// do projeto, so le o composite e grava uma copia fora da pasta do projeto.
+pub fn copy_composite_to(texture_dir: &Path, destination: &Path) -> Result<(), AppError> {
+    fs::copy(composite_path(texture_dir), destination)?;
+    Ok(())
+}
+
 /// Grava pixels RGBA crus como PNG, de forma atomica (arquivo temporario
 /// + rename). Reaproveitado por camadas individuais e pelo composite.
 fn write_rgba_png(path: &Path, width: u32, height: u32, pixels: &[u8]) -> Result<(), AppError> {

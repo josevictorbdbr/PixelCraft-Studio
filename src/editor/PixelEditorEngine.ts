@@ -298,14 +298,6 @@ export class PixelEditorEngine {
     this.swapLayers(index, index + 1);
   }
 
-  renameLayer(id: string, name: string): void {
-    const layer = this.layers.find((l) => l.id === id);
-    if (!layer || layer.name === name) return;
-    const before = layer.name;
-    layer.name = name;
-    this.pushLayerPropertyCommand<string>((v) => { layer.name = v; }, before, name);
-  }
-
   setLayerVisible(id: string, visible: boolean): void {
     const layer = this.layers.find((l) => l.id === id);
     if (!layer || layer.visible === visible) return;

@@ -64,6 +64,8 @@ export const es: Dictionary = {
     emptyGrid: "Aún no hay texturas",
     deleteAriaLabel: (name: string) => `Eliminar ${name}`,
     deleteTooltip: "Eliminar textura",
+    exportAriaLabel: (name: string) => `Exportar ${name}`,
+    exportTooltip: "Exportar textura",
   },
   editor: {
     backToTextures: "Volver a Texturas",

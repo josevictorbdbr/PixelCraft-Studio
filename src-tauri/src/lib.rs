@@ -4,7 +4,7 @@ mod core;
 use commands::project_commands::{create_project, delete_project, list_projects, open_project};
 use commands::settings_commands::{load_settings, save_settings};
 use commands::texture_commands::{
-    create_texture, delete_texture, file_size_bytes, import_texture, list_textures,
+    create_texture, delete_texture, export_texture, file_size_bytes, import_texture, list_textures,
     load_texture_layers, resize_texture, save_texture_layers, save_texture_layers_as,
 };
 
@@ -31,6 +31,7 @@ pub fn run() {
       create_texture,
       delete_texture,
       import_texture,
+      export_texture,
       file_size_bytes,
       load_texture_layers,
       resize_texture,

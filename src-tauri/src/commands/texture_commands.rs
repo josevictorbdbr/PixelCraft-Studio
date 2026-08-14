@@ -50,8 +50,8 @@ pub fn load_texture_layers(
 
 /// Grava o estado completo das camadas do Editor de volta no disco -
 /// chamado tanto pelo autosave de pixels quanto por operacoes estruturais
-/// (add/remover/reordenar/renomear camada, mudar visibilidade/opacidade),
-/// que acontecem em memoria no Editor e chegam aqui como uma lista completa.
+/// (add/remover/reordenar camada, mudar visibilidade/opacidade), que
+/// acontecem em memoria no Editor e chegam aqui como uma lista completa.
 #[tauri::command]
 #[allow(clippy::too_many_arguments)]
 pub fn save_texture_layers(
@@ -131,4 +131,20 @@ pub fn import_texture(
     let root = projects_root(&app)?;
     let project_dir = ProjectManager::dir_by_id(&root, &project_id)?;
     TextureManager::import(&project_dir, &category, &source_path)
+}
+
+/// Exporta o PNG final (composto) de uma textura para um caminho qualquer
+/// escolhido pelo usuario (dialogo nativo "Salvar como" no frontend) -
+/// nao mexe em nada do projeto, so copia o arquivo.
+#[tauri::command]
+pub fn export_texture(
+    app: AppHandle,
+    project_id: String,
+    category: String,
+    name: String,
+    destination_path: String,
+) -> Result<(), AppError> {
+    let root = projects_root(&app)?;
+    let project_dir = ProjectManager::dir_by_id(&root, &project_id)?;
+    TextureManager::export(&project_dir, &category, &name, &destination_path)
 }

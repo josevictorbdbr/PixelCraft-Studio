@@ -73,6 +73,9 @@ export const en = {
     emptyGrid: "No textures yet",
     deleteAriaLabel: (name: string) => `Delete ${name}`,
     deleteTooltip: "Delete texture",
+    exportAriaLabel: (name: string) => `Export ${name}`,
+    exportTooltip: "Export texture",
+    
   },
   editor: {
     backToTextures: "Back to Textures",

@@ -205,6 +205,26 @@ impl TextureManager {
         filesystem::delete_texture_dir(&texture_dir)
     }
 
+    /// Exporta o PNG final (composto) de uma textura para um caminho
+    /// qualquer escolhido pelo usuario (fora da pasta do projeto) - so
+    /// copia o arquivo, nao altera nada do projeto. `destination_path`
+    /// ja vem completo (pasta + nome escolhidos no dialog nativo do
+    /// frontend).
+    pub fn export(project_dir: &Path, category: &str, name: &str, destination_path: &str) -> Result<(), AppError> {
+        let category_dir = Self::checked_category_dir(project_dir, category)?;
+        filesystem::migrate_legacy_texture(&category_dir, name)?;
+
+        let texture_dir = filesystem::texture_dir(&category_dir, name);
+        if !texture_dir.exists() {
+            return Err(AppError::TextureNotFound {
+                name: name.to_string(),
+                category: category.to_string(),
+            });
+        }
+
+        filesystem::copy_composite_to(&texture_dir, Path::new(destination_path))
+    }
+
     /// Tamanho em bytes de um arquivo no disco - usado antes de importar.
     pub fn file_size_bytes(path: &str) -> Result<u64, AppError> {
         let metadata = std::fs::metadata(path)?;

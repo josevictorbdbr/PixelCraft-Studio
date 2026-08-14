@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { Trash2 } from "lucide-react";
+import { save } from "@tauri-apps/plugin-dialog";
+import { Trash2, Download } from "lucide-react";
 import type { TextureSummary } from "../../types/texture";
 import { placeholderColor } from "../../utils/placeholderColor";
 import { useTranslation } from "../../i18n/useTranslation";
+import { useProjectStore } from "../../store/useProjectStore";
+import { exportTexture } from "../../services/textureService";
+import { translateError } from "../../i18n/errors";
 
 interface TextureThumbnailProps {
   texture: TextureSummary;
@@ -18,7 +22,26 @@ interface TextureThumbnailProps {
  */
 export function TextureThumbnail({ texture, onOpen, onDelete }: TextureThumbnailProps) {
   const t = useTranslation();
+  const activeProject = useProjectStore((s) => s.activeProject);
   const [imageFailed, setImageFailed] = useState(false);
+
+  const handleExport = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!activeProject) return;
+
+    const destination = await save({
+      defaultPath: `${texture.name}.png`,
+      filters: [{ name: t.texture.pngFilterName, extensions: ["png"] }],
+    });
+    if (!destination) return; // usuario cancelou o dialog
+
+    try {
+      await exportTexture(activeProject.id, texture.category, texture.name, destination);
+    } catch (err) {
+      // Sem sistema de toast no projeto ainda - alerta simples por enquanto.
+      window.alert(translateError(t, err));
+    }
+  };
 
   return (
     <div className="flex flex-col items-center gap-1 w-16 group">
@@ -44,18 +67,30 @@ export function TextureThumbnail({ texture, onOpen, onDelete }: TextureThumbnail
             />
           )}
         </button>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete();
-          }}
-          aria-label={t.texture.deleteAriaLabel(texture.name)}
-          title={t.texture.deleteTooltip}
-          className="absolute -top-1.5 -right-1.5 size-5 rounded-sm bg-panel border border-line text-muted hover:text-red-400 hover:border-red-400 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-        >
-          <Trash2 size={11} />
-        </button>
+
+        <div className="absolute -top-1.5 -right-1.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <button
+            type="button"
+            onClick={handleExport}
+            aria-label={t.texture.exportAriaLabel(texture.name)}
+            title={t.texture.exportTooltip}
+            className="size-5 rounded-sm bg-panel border border-line text-muted hover:text-accent hover:border-accent flex items-center justify-center cursor-pointer"
+          >
+            <Download size={11} />
+          </button>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+            aria-label={t.texture.deleteAriaLabel(texture.name)}
+            title={t.texture.deleteTooltip}
+            className="size-5 rounded-sm bg-panel border border-line text-muted hover:text-red-400 hover:border-red-400 flex items-center justify-center cursor-pointer"
+          >
+            <Trash2 size={11} />
+          </button>
+        </div>
       </div>
       <span className="text-caption text-muted text-center truncate w-full">
         {texture.name}

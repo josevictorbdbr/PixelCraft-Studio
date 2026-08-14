@@ -72,6 +72,8 @@ export const ptBR: Dictionary = {
     emptyGrid: "Nenhuma textura ainda",
     deleteAriaLabel: (name: string) => `Excluir ${name}`,
     deleteTooltip: "Excluir textura",
+    exportAriaLabel: (name: string) => `Exportar ${name}`,
+    exportTooltip: "Exportar textura",
   },
   editor: {
     backToTextures: "Voltar para Texturas",
