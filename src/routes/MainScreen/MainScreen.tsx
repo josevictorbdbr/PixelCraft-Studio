@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Plus, Upload, Search, Settings, Loader2 } from "lucide-react";
+import { ArrowLeft, Plus, Upload, Search, Settings, Loader2, Pencil, Download, Trash2 } from "lucide-react";
+import { save } from "@tauri-apps/plugin-dialog";
 import { useUIStore } from "../../store/useUIStore";
 import { useProjectStore } from "../../store/useProjectStore";
 import { useEditorStore } from "../../store/useEditorStore";
@@ -16,6 +17,7 @@ import { CATEGORIES, type CategoryId, type TextureSummary } from "../../types/te
 import {
   createTexture,
   deleteTexture,
+  exportTexture,
   importTexture,
   listTextures,
 } from "../../services/textureService";
@@ -32,6 +34,11 @@ export function MainScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
 
+  // Textura selecionada com 1 clique na grade - as acoes (editar/exportar/
+  // excluir) ficam na barra de cima, a esquerda de "Nova Textura", em vez
+  // de botoes em cima da miniatura (risco de excluir sem querer).
+  const [selectedTexture, setSelectedTexture] = useState<TextureSummary | null>(null);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [pendingScroll, setPendingScroll] = useState<CategoryId | null>(null);
   const sectionRefs = useRef<Partial<Record<CategoryId, HTMLDivElement | null>>>({});
@@ -41,13 +48,10 @@ export function MainScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dialogError, setDialogError] = useState<string | null>(null);
 
-  // Sem projeto ativo (ex.: usuario chegou aqui sem passar pela HomeScreen),
-  // nao ha o que mostrar - volta para a lista de projetos.
   useEffect(() => {
     if (!activeProject) goTo("home");
   }, [activeProject, goTo]);
 
-  // Carrega as texturas reais do projeto ao abrir a tela.
   useEffect(() => {
     if (!activeProject) return;
     let cancelled = false;
@@ -68,7 +72,16 @@ export function MainScreen() {
     };
   }, [activeProject]);
 
-  // Roda depois que a busca e limpa (e a secao volta a existir no DOM).
+  // Se a textura selecionada sumir da lista (ex: foi excluida), limpa a selecao.
+  useEffect(() => {
+    if (
+      selectedTexture &&
+      !textures.some((tex) => tex.category === selectedTexture.category && tex.name === selectedTexture.name)
+    ) {
+      setSelectedTexture(null);
+    }
+  }, [textures, selectedTexture]);
+
   useEffect(() => {
     if (pendingScroll && sectionRefs.current[pendingScroll]) {
       sectionRefs.current[pendingScroll]?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -85,7 +98,6 @@ export function MainScreen() {
 
   const handleSelectCategory = (categoryId: CategoryId) => {
     if (searchQuery) {
-      // A secao pode estar oculta pela busca - limpa e agenda o scroll.
       setSearchQuery("");
       setPendingScroll(categoryId);
     } else {
@@ -103,10 +115,27 @@ export function MainScreen() {
     try {
       await deleteTexture(activeProject.id, texture.category, texture.name);
       setTextures((prev) =>
-        prev.filter((t) => !(t.category === texture.category && t.name === texture.name)),
+        prev.filter((tex) => !(tex.category === texture.category && tex.name === texture.name)),
+      );
+      setSelectedTexture((prev) =>
+        prev && prev.category === texture.category && prev.name === texture.name ? null : prev,
       );
     } catch (err) {
       setListError(translateError(t, err));
+    }
+  };
+
+  const handleExportTexture = async (texture: TextureSummary) => {
+    const destination = await save({
+      defaultPath: `${texture.name}.png`,
+      filters: [{ name: t.texture.pngFilterName, extensions: ["png"] }],
+    });
+    if (!destination) return;
+
+    try {
+      await exportTexture(activeProject.id, texture.category, texture.name, destination);
+    } catch (err) {
+      window.alert(translateError(t, err));
     }
   };
 
@@ -151,7 +180,6 @@ export function MainScreen() {
 
   return (
     <div className="h-screen flex flex-col bg-canvas">
-      {/* Topo */}
       <header className="flex items-center justify-between gap-4 px-panel h-14 border-b border-line shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           <IconButton icon={<ArrowLeft size={18} />} label={t.main.backToProjects} onClick={handleBack} />
@@ -159,6 +187,23 @@ export function MainScreen() {
         </div>
 
         <div className="flex items-center gap-button-gap shrink-0">
+          {selectedTexture && (
+            <div className="flex items-center gap-button-gap pr-2 mr-1 border-r border-line">
+              <Button variant="outline" onClick={() => handleOpenTexture(selectedTexture)}>
+                <Pencil size={16} />
+                {t.main.editTextureButton}
+              </Button>
+              <Button variant="outline" onClick={() => handleExportTexture(selectedTexture)}>
+                <Upload size={16} />
+                {t.main.exportTextureButton}
+              </Button>
+              <Button variant="danger" onClick={() => handleDeleteTexture(selectedTexture)}>
+                <Trash2 size={16} />
+                {t.main.deleteTextureButton}
+              </Button>
+            </div>
+          )}
+
           <Button
             variant="outline"
             onClick={() => {
@@ -170,13 +215,13 @@ export function MainScreen() {
             {t.main.newTextureButton}
           </Button>
           <Button
-            variant="secondary"
+            variant="outline"
             onClick={() => {
               setDialogError(null);
               setShowImportDialog(true);
             }}
           >
-            <Upload size={16} />
+            <Download size={16} />
             {t.main.importButton}
           </Button>
           <div className="relative">
@@ -193,11 +238,13 @@ export function MainScreen() {
         </div>
       </header>
 
-      {/* Corpo: sidebar de categorias + area principal */}
       <div className="flex-1 flex min-h-0">
         <CategorySidebar onSelect={handleSelectCategory} />
 
-        <div className="flex-1 overflow-y-auto p-panel bg-panel">
+        <div
+          className="flex-1 overflow-y-auto p-panel bg-panel"
+          onClick={() => setSelectedTexture(null)}
+        >
           {isLoading ? (
             <div className="flex items-center justify-center gap-2 text-muted text-body py-12">
               <Loader2 size={16} className="animate-spin" />
@@ -217,8 +264,9 @@ export function MainScreen() {
                   }}
                   label={t.categories[category.id]}
                   textures={categoryTextures}
+                  selectedTexture={selectedTexture}
+                  onSelectTexture={setSelectedTexture}
                   onOpenTexture={handleOpenTexture}
-                  onDeleteTexture={handleDeleteTexture}
                 />
               ))}
             </div>

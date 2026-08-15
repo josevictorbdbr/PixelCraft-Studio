@@ -4,11 +4,16 @@ import { TextureThumbnail } from "./TextureThumbnail";
 
 interface TextureGridProps {
   textures: TextureSummary[];
+  selectedTexture: TextureSummary | null;
+  onSelectTexture: (texture: TextureSummary | null) => void;
   onOpenTexture: (texture: TextureSummary) => void;
-  onDeleteTexture: (texture: TextureSummary) => void;
 }
 
-export function TextureGrid({ textures, onOpenTexture, onDeleteTexture }: TextureGridProps) {
+function isSameTexture(a: TextureSummary | null, b: TextureSummary): boolean {
+  return a !== null && a.category === b.category && a.name === b.name;
+}
+
+export function TextureGrid({ textures, selectedTexture, onSelectTexture, onOpenTexture }: TextureGridProps) {
   const t = useTranslation();
 
   if (textures.length === 0) {
@@ -21,8 +26,9 @@ export function TextureGrid({ textures, onOpenTexture, onDeleteTexture }: Textur
         <TextureThumbnail
           key={`${texture.category}/${texture.name}`}
           texture={texture}
+          isSelected={isSameTexture(selectedTexture, texture)}
+          onSelect={() => onSelectTexture(texture)}
           onOpen={() => onOpenTexture(texture)}
-          onDelete={() => onDeleteTexture(texture)}
         />
       ))}
     </div>

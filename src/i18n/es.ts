@@ -66,6 +66,11 @@ export const es: Dictionary = {
     deleteTooltip: "Eliminar textura",
     exportAriaLabel: (name: string) => `Exportar ${name}`,
     exportTooltip: "Exportar textura",
+    openAriaLabel: (name: string) => `Abrir ${name}`,
+    openTooltip: "Abrir textura",
+    editTextureButton: "Editar Textura",
+    exportTextureButton: "Exportar",
+    deleteTextureButton: "Eliminar",
   },
   editor: {
     backToTextures: "Volver a Texturas",

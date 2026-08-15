@@ -74,6 +74,11 @@ export const ptBR: Dictionary = {
     deleteTooltip: "Excluir textura",
     exportAriaLabel: (name: string) => `Exportar ${name}`,
     exportTooltip: "Exportar textura",
+    openAriaLabel: (name: string) => `Abrir ${name}`,
+    openTooltip: "Abrir textura",
+    editTextureButton: "Editar Textura",
+    exportTextureButton: "Exportar",
+    deleteTextureButton: "Excluir",
   },
   editor: {
     backToTextures: "Voltar para Texturas",

@@ -75,7 +75,11 @@ export const en = {
     deleteTooltip: "Delete texture",
     exportAriaLabel: (name: string) => `Export ${name}`,
     exportTooltip: "Export texture",
-    
+    openAriaLabel: (name: string) => `Open ${name}`,
+    openTooltip: "Open texture",
+    editTextureButton: "Edit Texture",
+    exportTextureButton: "Export",
+    deleteTextureButton: "Delete",
   },
   editor: {
     backToTextures: "Back to Textures",

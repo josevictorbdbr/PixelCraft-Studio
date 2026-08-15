@@ -305,11 +305,11 @@ export function EditorScreen() {
           </h1>
         </div>
         <div className="flex items-center gap-button-gap shrink-0">
-          <Button variant="secondary" onClick={handleSave} disabled={isSaving || !engine}>
+          <Button variant="outline" onClick={handleSave} disabled={isSaving || !engine}>
             {isSaving ? t.common.saving : justSaved ? t.common.saved : t.common.save}
           </Button>
           <Button
-            variant="secondary"
+            variant="outline"
             onClick={() => {
               setSaveAsError(null);
               setShowSaveAsDialog(true);

@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
+type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "danger";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -17,6 +17,8 @@ const variantClasses: Record<ButtonVariant, string> = {
   outline: "bg-transparent text-accent border border-accent hover:bg-accent/10",
   // Sem fundo/borda - acao secundaria discreta (ex. Abrir/Excluir Projeto)
   ghost: "bg-transparent text-muted hover:text-ink",
+  // Mesmo padrao do outline, mas vermelho - acao destrutiva com contorno sempre visivel (ex. Excluir Textura)
+  danger: "bg-transparent text-red-400 border border-red-500/60 hover:bg-red-500/10 hover:border-red-500",
 };
 
 /** Botao padrao, 34px de altura conforme doc de UI/UX (secao 4). */
