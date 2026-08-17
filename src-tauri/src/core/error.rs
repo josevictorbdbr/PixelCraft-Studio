@@ -3,12 +3,13 @@ use std::collections::HashMap;
 use serde::Serialize;
 
 /// Qual tipo de entidade um erro de nome/duplicidade se refere a - carregado
-/// como parametro ("project"/"texture") para o frontend decidir a frase
-/// certa no idioma ativo, em vez do backend decidir isso em portugues.
+/// como parametro ("project"/"texture"/"template") para o frontend decidir
+/// a frase certa no idioma ativo, em vez do backend decidir isso em portugues.
 #[derive(Debug, Clone, Copy)]
 pub enum EntityKind {
     Project,
     Texture,
+    Template,
 }
 
 impl EntityKind {
@@ -16,6 +17,7 @@ impl EntityKind {
         match self {
             EntityKind::Project => "project",
             EntityKind::Texture => "texture",
+            EntityKind::Template => "template",
         }
     }
 }
@@ -50,6 +52,11 @@ pub enum AppError {
     /// Editor tentou salvar uma textura sem nenhuma camada (deve sempre
     /// sobrar pelo menos 1 - o Editor bloqueia excluir a ultima camada).
     EmptyLayerList,
+    /// `id` de template nao encontrado nem entre os embutidos nem custom.
+    TemplateNotFound { id: String },
+    /// Pasta de recursos `resources/templates/` nao foi encontrada no
+    /// bundle (normalmente falta registrar em `tauri.conf.json`).
+    TemplateResourceDirNotFound,
 }
 
 impl AppError {
@@ -76,6 +83,8 @@ impl AppError {
             AppError::Serialization { .. } => "serialization_error",
             AppError::LayerLimitReached { .. } => "layer_limit_reached",
             AppError::EmptyLayerList => "empty_layer_list",
+            AppError::TemplateNotFound { .. } => "template_not_found",
+            AppError::TemplateResourceDirNotFound => "template_resource_dir_not_found",
         }
     }
 
@@ -120,6 +129,9 @@ impl AppError {
             }
             AppError::LayerLimitReached { max } => {
                 map.insert("max", max.to_string());
+            }
+            AppError::TemplateNotFound { id } => {
+                map.insert("id", id.clone());
             }
             _ => {}
         }

@@ -1,10 +1,11 @@
 import type { Dictionary } from "./en";
 
 // Helpers locais (nao fazem parte do Dictionary) para compor as frases de
-// erro que mencionam projeto/textura, preservando a concordancia do
-// portugues ("do projeto"/"da textura", "um projeto"/"uma textura").
-const ownerPhrase: Record<string, string> = { project: "do projeto", texture: "da textura" };
-const articlePhrase: Record<string, string> = { project: "um projeto", texture: "uma textura" };
+// erro que mencionam projeto/textura/template, preservando a concordancia
+// do portugues ("do projeto"/"da textura"/"do template", "um projeto"/"uma
+// textura"/"um template").
+const ownerPhrase: Record<string, string> = { project: "do projeto", texture: "da textura", template: "do template" };
+const articlePhrase: Record<string, string> = { project: "um projeto", texture: "uma textura", template: "um template" };
 
 /**
  * A anotacao `: Dictionary` (em vez de `as const`) e o que garante a
@@ -19,11 +20,17 @@ export const ptBR: Dictionary = {
     saved: "Salvo",
     create: "Criar",
     creating: "Criando...",
+    loading: "Carregando...",
   },
   settings: {
     buttonLabel: "Configurações",
     title: "Configurações",
     languageLabel: "Idioma",
+    manageTemplatesButton: "Gerenciar Templates",
+    manageTemplatesDialogTitle: "Gerenciar Templates",
+    importTemplateButton: "Importar Template",
+    deleteSelectedTemplateButton: "Excluir",
+    templateAddedNotice: "Template Adicionado",
   },
   categories: {
     blocks: "Blocos",
@@ -34,6 +41,7 @@ export const ptBR: Dictionary = {
     particles: "Partículas",
     misc: "Misc",
   },
+  templates: {},
   home: {
     newProjectButton: "Novo Projeto",
     projectsHeading: "PROJETOS",
@@ -93,6 +101,9 @@ export const ptBR: Dictionary = {
     colorPickerTitle: "Selecionar Cor",
     opacityLabel: "Opacidade %",
     selectButton: "Selecionar",
+    templatesButton: "Templates",
+    templatesDialogTitle: "Templates de Textura",
+    templatesEmpty: "Nenhum template disponível ainda.",
     layersHeading: "CAMADAS",
     baseLayerName: "Base",
     addLayerButton: "Adicionar Camada",
@@ -170,5 +181,7 @@ export const ptBR: Dictionary = {
     layer_limit_reached: (p: Record<string, string>) =>
       `Você pode ter no máximo ${p.max} camadas por textura.`,
     empty_layer_list: () => "Uma textura precisa ter pelo menos uma camada.",
+    template_not_found: () => "Template não encontrado.",
+    template_resource_dir_not_found: () => "Não foi possível localizar a pasta de templates do aplicativo.",
   },
 };

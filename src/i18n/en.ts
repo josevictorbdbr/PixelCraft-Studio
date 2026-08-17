@@ -3,7 +3,7 @@ import type { CategoryId } from "../types/texture";
 // Helper local (nao faz parte do Dictionary) para as mensagens de erro que
 // mencionam "project" ou "texture" - o backend so manda o id em ingles
 // (EntityKind::as_str() em core/error.rs), a palavra certa no idioma vem daqui.
-const entityNoun: Record<string, string> = { project: "project", texture: "texture" };
+const entityNoun: Record<string, string> = { project: "project", texture: "texture", template: "template" };
 
 /**
  * Fonte da verdade das chaves de traducao. pt-BR e es sao tipados contra o
@@ -18,11 +18,17 @@ export const en = {
     saved: "Saved",
     create: "Create",
     creating: "Creating...",
+    loading: "Loading...",
   },
   settings: {
     buttonLabel: "Settings",
     title: "Settings",
     languageLabel: "Language",
+    manageTemplatesButton: "Manage Templates",
+    manageTemplatesDialogTitle: "Manage Templates",
+    importTemplateButton: "Import Template",
+    deleteSelectedTemplateButton: "Delete",
+    templateAddedNotice: "Template Added",
   },
   // "gui" e "misc" ficam sempre em ingles nos 3 idiomas (decisao do usuario:
   // termos curtos/universais, nao vale a pena traduzir).
@@ -35,6 +41,10 @@ export const en = {
     particles: "Particles",
     misc: "Misc",
   } satisfies Record<CategoryId, string>,
+  // Nomes de exibicao dos templates EMBUTIDOS, por id (ver manifest.json
+  // em src-tauri/resources/templates/). Chave ausente cai no fallback (a
+  // propria id crua) - templates custom nao entram aqui, usam nome literal.
+  templates: {} as Record<string, string>,
   home: {
     newProjectButton: "New Project",
     projectsHeading: "PROJECTS",
@@ -94,6 +104,9 @@ export const en = {
     colorPickerTitle: "Select Color",
     opacityLabel: "Opacity %",
     selectButton: "Select",
+    templatesButton: "Templates",
+    templatesDialogTitle: "Texture Templates",
+    templatesEmpty: "No templates available yet.",
     layersHeading: "LAYERS",
     baseLayerName: "Base",
     addLayerButton: "Add Layer",
@@ -174,6 +187,8 @@ export const en = {
     layer_limit_reached: (p: Record<string, string>) =>
       `You can have at most ${p.max} layers per texture.`,
     empty_layer_list: () => "A texture must have at least one layer.",
+    template_not_found: () => "Template not found.",
+    template_resource_dir_not_found: () => "Could not locate the templates folder bundled with the app.",
   },
 };
 

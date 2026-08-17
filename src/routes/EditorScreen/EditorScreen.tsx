@@ -10,6 +10,7 @@ import { PixelCanvas } from "../../components/editor/PixelCanvas";
 import { ZoomControl } from "../../components/editor/ZoomControl";
 import { LayerPanel } from "../../components/editor/LayerPanel";
 import { ColorPalette } from "../../components/editor/ColorPalette";
+import { TemplatePicker } from "../../components/editor/TemplatePicker";
 import { ColorPickerDialog } from "../../components/editor/ColorPickerDialog";
 import { ResizeTextureDialog } from "../../components/editor/ResizeTextureDialog";
 import { SaveAsTextureDialog } from "../../components/editor/SaveAsTextureDialog";
@@ -345,7 +346,8 @@ export function EditorScreen() {
               setShowResizeDialog(true);
             }}
           />
-          <div className="p-2 border-t border-line shrink-0">
+          <div className="p-2 border-t border-line shrink-0 flex flex-col gap-2">
+            {engine && <TemplatePicker engine={engine} />}
             <ColorPalette
               activeColor={activeColor}
               activeAlpha={activeAlpha}

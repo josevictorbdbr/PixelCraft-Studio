@@ -34,6 +34,13 @@ export interface LayerSavePayload {
   pixels: number[];
 }
 
+/** Pixels de um template, ja redimensionados pelo backend para o tamanho da textura atual. */
+export interface TemplateLayerSource {
+  width: number;
+  height: number;
+  pixels: number[];
+}
+
 /**
  * Orquestra as camadas (PixelCanvas por camada) + ToolRegistry +
  * HistoryManager (doc de arquitetura, secao 6). `layers[0]` e sempre a
@@ -229,6 +236,26 @@ export class PixelEditorEngine {
     if (this.layers.length >= MAX_LAYERS) return;
 
     const layer = Layer.createBlank(`Layer ${this.layers.length + 1}`, this.width, this.height);
+    this.insertLayerOnTop(layer);
+  }
+
+  /**
+   * Cria uma camada nova no topo ja populada com os pixels de um template
+   * (backend ja redimensionou via nearest-neighbor para width/height desta
+   * textura). Mesmo fluxo estrutural de addLayer() - bloqueada em
+   * MAX_LAYERS. `name` e o rotulo ja traduzido/decidido pela UI.
+   */
+  addLayerFromTemplate(name: string, template: TemplateLayerSource): void {
+    if (this.layers.length >= MAX_LAYERS) return;
+    if (template.width !== this.width || template.height !== this.height) return;
+
+    const data = new ImageData(new Uint8ClampedArray(template.pixels), this.width, this.height);
+    const layer = new Layer(crypto.randomUUID(), name, new PixelCanvas(this.width, this.height, data));
+    this.insertLayerOnTop(layer);
+  }
+
+  /** Compartilhado por addLayer/addLayerFromTemplate: insere no topo (indice 0), ativa e empilha historico. */
+  private insertLayerOnTop(layer: Layer): void {
     const index = 0;
     const activeBefore = this.activeLayerId;
 

@@ -1,7 +1,7 @@
 import type { Dictionary } from "./en";
 
-const ownerPhrase: Record<string, string> = { project: "del proyecto", texture: "de la textura" };
-const articlePhrase: Record<string, string> = { project: "un proyecto", texture: "una textura" };
+const ownerPhrase: Record<string, string> = { project: "del proyecto", texture: "de la textura", template: "de la plantilla" };
+const articlePhrase: Record<string, string> = { project: "un proyecto", texture: "una textura", template: "una plantilla" };
 
 export const es: Dictionary = {
   common: {
@@ -11,11 +11,17 @@ export const es: Dictionary = {
     saved: "Guardado",
     create: "Crear",
     creating: "Creando...",
+    loading: "Cargando...",
   },
   settings: {
     buttonLabel: "Configuración",
     title: "Configuración",
     languageLabel: "Idioma",
+    manageTemplatesButton: "Gestionar Plantillas",
+    manageTemplatesDialogTitle: "Gestionar Plantillas",
+    importTemplateButton: "Importar Plantilla",
+    deleteSelectedTemplateButton: "Eliminar",
+    templateAddedNotice: "Plantilla Añadida",
   },
   categories: {
     blocks: "Bloques",
@@ -26,6 +32,7 @@ export const es: Dictionary = {
     particles: "Partículas",
     misc: "Misc",
   },
+  templates: {},
   home: {
     newProjectButton: "Nuevo Proyecto",
     projectsHeading: "PROYECTOS",
@@ -85,6 +92,9 @@ export const es: Dictionary = {
     colorPickerTitle: "Seleccionar Color",
     opacityLabel: "Opacidad %",
     selectButton: "Seleccionar",
+    templatesButton: "Plantillas",
+    templatesDialogTitle: "Plantillas de Textura",
+    templatesEmpty: "Aún no hay plantillas disponibles.",
     layersHeading: "CAPAS",
     baseLayerName: "Base",
     addLayerButton: "Añadir Capa",
@@ -162,5 +172,7 @@ export const es: Dictionary = {
     layer_limit_reached: (p: Record<string, string>) =>
       `Puedes tener como máximo ${p.max} capas por textura.`,
     empty_layer_list: () => "Una textura debe tener al menos una capa.",
+    template_not_found: () => "Plantilla no encontrada.",
+    template_resource_dir_not_found: () => "No se pudo localizar la carpeta de plantillas de la aplicación.",
   },
 };
