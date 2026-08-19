@@ -1,1 +1,16 @@
-[]
+[
+  { "id": "axe", "file": "axe.png" },
+  { "id": "boots", "file": "boots.png" },
+  { "id": "bow", "file": "bow.png" },
+  { "id": "chestplate", "file": "chestplate.png" },
+  { "id": "helmet", "file": "helmet.png" },
+  { "id": "hoe", "file": "hoe.png" },
+  { "id": "horse_armor", "file": "horse_armor.png" },
+  { "id": "ingot", "file": "ingot.png" },
+  { "id": "leggings", "file": "leggings.png" },
+  { "id": "pickaxe", "file": "pickaxe.png" },
+  { "id": "shovel", "file": "shovel.png" },
+  { "id": "spear", "file": "spear.png" },
+  { "id": "stick", "file": "stick.png" },
+  { "id": "sword", "file": "sword.png" }
+]
