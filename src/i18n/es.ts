@@ -22,6 +22,8 @@ export const es: Dictionary = {
     importTemplateButton: "Importar Plantilla",
     deleteSelectedTemplateButton: "Eliminar",
     templateAddedNotice: "Plantilla Añadida",
+    customTemplatesHeading: "Plantillas Personalizadas",
+    deleteTemplateAriaLabel: (name: string) => `Eliminar plantilla ${name}`,
   },
   categories: {
     blocks: "Bloques",

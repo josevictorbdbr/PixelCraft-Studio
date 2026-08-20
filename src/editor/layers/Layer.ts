@@ -7,13 +7,25 @@ import { PixelCanvas } from "../canvas/PixelCanvas";
  * que o backend sabe qual PNG de camada regravar.
  */
 export class Layer {
+  public readonly id: string;
+  public name: string;
+  public canvas: PixelCanvas;
+  public visible: boolean;
+  public opacity: number;
+
   constructor(
-    public readonly id: string,
-    public name: string,
-    public canvas: PixelCanvas,
-    public visible: boolean = true,
-    public opacity: number = 100,
-  ) {}
+    id: string,
+    name: string,
+    canvas: PixelCanvas,
+    visible: boolean = true,
+    opacity: number = 100,
+  ) {
+    this.id = id;
+    this.name = name;
+    this.canvas = canvas;
+    this.visible = visible;
+    this.opacity = opacity;
+  }
 
   static createBlank(name: string, width: number, height: number): Layer {
     return new Layer(crypto.randomUUID(), name, new PixelCanvas(width, height));

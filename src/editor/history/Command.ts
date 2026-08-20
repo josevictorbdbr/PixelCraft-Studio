@@ -46,12 +46,22 @@ export class SnapshotCommand implements Command {
  * antigo/novo, nao uma copia da camada inteira.
  */
 export class LayerPropertyCommand<T> implements Command {
+  private readonly setValue: (value: T) => void;
+  private readonly before: T;
+  private readonly after: T;
+  private readonly onChange: () => void;
+
   constructor(
-    private readonly setValue: (value: T) => void,
-    private readonly before: T,
-    private readonly after: T,
-    private readonly onChange: () => void,
-  ) {}
+    setValue: (value: T) => void,
+    before: T,
+    after: T,
+    onChange: () => void,
+  ) {
+    this.setValue = setValue;
+    this.before = before;
+    this.after = after;
+    this.onChange = onChange;
+  }
 
   undo(): void {
     this.setValue(this.before);
@@ -66,12 +76,22 @@ export class LayerPropertyCommand<T> implements Command {
 
 /** Troca a ordem das camadas (mover para cima/baixo). Guarda so a lista de ids antes/depois. */
 export class ReorderLayersCommand implements Command {
+  private readonly applyOrder: (order: string[]) => void;
+  private readonly before: string[];
+  private readonly after: string[];
+  private readonly onChange: () => void;
+
   constructor(
-    private readonly applyOrder: (order: string[]) => void,
-    private readonly before: string[],
-    private readonly after: string[],
-    private readonly onChange: () => void,
-  ) {}
+    applyOrder: (order: string[]) => void,
+    before: string[],
+    after: string[],
+    onChange: () => void,
+  ) {
+    this.applyOrder = applyOrder;
+    this.before = before;
+    this.after = after;
+    this.onChange = onChange;
+  }
 
   undo(): void {
     this.applyOrder(this.before);
@@ -92,17 +112,37 @@ export class ReorderLayersCommand implements Command {
  * entao reinserir no undo/redo e barato.
  */
 export class AddRemoveLayerCommand implements Command {
+  private readonly insert: (layer: Layer, index: number) => void;
+  private readonly remove: (layerId: string) => void;
+  private readonly setActiveId: (id: string) => void;
+  private readonly layer: Layer;
+  private readonly index: number;
+  private readonly wasAdd: boolean;
+  private readonly activeBefore: string;
+  private readonly activeAfter: string;
+  private readonly onChange: () => void;
+
   constructor(
-    private readonly insert: (layer: Layer, index: number) => void,
-    private readonly remove: (layerId: string) => void,
-    private readonly setActiveId: (id: string) => void,
-    private readonly layer: Layer,
-    private readonly index: number,
-    private readonly wasAdd: boolean,
-    private readonly activeBefore: string,
-    private readonly activeAfter: string,
-    private readonly onChange: () => void,
-  ) {}
+    insert: (layer: Layer, index: number) => void,
+    remove: (layerId: string) => void,
+    setActiveId: (id: string) => void,
+    layer: Layer,
+    index: number,
+    wasAdd: boolean,
+    activeBefore: string,
+    activeAfter: string,
+    onChange: () => void,
+  ) {
+    this.insert = insert;
+    this.remove = remove;
+    this.setActiveId = setActiveId;
+    this.layer = layer;
+    this.index = index;
+    this.wasAdd = wasAdd;
+    this.activeBefore = activeBefore;
+    this.activeAfter = activeAfter;
+    this.onChange = onChange;
+  }
 
   undo(): void {
     if (this.wasAdd) this.remove(this.layer.id);

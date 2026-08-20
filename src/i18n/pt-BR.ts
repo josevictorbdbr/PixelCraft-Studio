@@ -31,6 +31,8 @@ export const ptBR: Dictionary = {
     importTemplateButton: "Importar Template",
     deleteSelectedTemplateButton: "Excluir",
     templateAddedNotice: "Template Adicionado",
+    customTemplatesHeading: "Templates Personalizados",
+    deleteTemplateAriaLabel: (name: string) => `Excluir template ${name}`,
   },
   categories: {
     blocks: "Blocos",

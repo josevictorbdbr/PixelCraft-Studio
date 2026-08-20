@@ -29,6 +29,8 @@ export const en = {
     importTemplateButton: "Import Template",
     deleteSelectedTemplateButton: "Delete",
     templateAddedNotice: "Template Added",
+    customTemplatesHeading: "Custom Templates",
+    deleteTemplateAriaLabel: (name: string) => `Delete template ${name}`,
   },
   // "gui" e "misc" ficam sempre em ingles nos 3 idiomas (decisao do usuario:
   // termos curtos/universais, nao vale a pena traduzir).

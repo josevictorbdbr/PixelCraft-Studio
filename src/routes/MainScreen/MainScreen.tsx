@@ -191,15 +191,15 @@ export function MainScreen() {
             <div className="flex items-center gap-button-gap pr-2 mr-1 border-r border-line">
               <Button variant="outline" onClick={() => handleOpenTexture(selectedTexture)}>
                 <Pencil size={16} />
-                {t.main.editTextureButton}
+                {t.texture.editTextureButton}
               </Button>
               <Button variant="outline" onClick={() => handleExportTexture(selectedTexture)}>
                 <Upload size={16} />
-                {t.main.exportTextureButton}
+                {t.texture.exportTextureButton}
               </Button>
               <Button variant="danger" onClick={() => handleDeleteTexture(selectedTexture)}>
                 <Trash2 size={16} />
-                {t.main.deleteTextureButton}
+                {t.texture.deleteTextureButton}
               </Button>
             </div>
           )}
