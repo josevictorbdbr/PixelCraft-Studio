@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "PixelCraft Studio",
+  "productName": "Pixel Crafting MC",
   "version": "0.7.0",
-  "identifier": "studio.pixelcraft.app",
+  "identifier": "com.pixelcraftingmc",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "PixelCraft Studio",
+        "title": "Pixel Crafting MC",
         "width": 1280,
         "height": 800,
         "minWidth": 960,

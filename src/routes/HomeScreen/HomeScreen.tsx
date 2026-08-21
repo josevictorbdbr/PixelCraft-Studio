@@ -105,7 +105,7 @@ export function HomeScreen() {
     >
       {/* Topo */}
       <header className="flex items-center justify-between px-panel h-14 border-b border-line shrink-0 bg-canvas">
-        <span className="text-caption text-muted tracking-wide">PixelCraft Studio</span>
+        <span className="text-caption text-muted tracking-wide">Pixel Crafting MC</span>
         <IconButton icon={<Settings size={18} />} label={t.settings.buttonLabel} onClick={openSettings} />
       </header>
 
@@ -115,12 +115,13 @@ export function HomeScreen() {
         <div className="flex flex-col items-center text-center shrink-0 mb-10">
           <div className="flex gap-1 mb-4" aria-hidden>
             <span className="size-3 bg-accent" />
-            <span className="size-3 bg-accent/60" />
-            <span className="size-3 bg-accent" />
+            <span className="size-3 bg-[#4ADE80]" />
+            <span className="size-3 bg-[#EF4444]" />
           </div>
-          <h1 className="font-display text-ink text-2xl leading-relaxed mb-8">
-            PixelCraft Studio
+          <h1 className="font-display text-ink text-2xl leading-relaxed">
+            Pixel Crafting <span className="text-[#4ADE80]">MC</span>
           </h1>
+          <p className="text-body text-muted mt-2 mb-8">{t.home.subtitle}</p>
           <Button
             variant="outline"
             className="h-auto py-4 px-8"
@@ -183,7 +184,7 @@ export function HomeScreen() {
 
       {/* Rodape */}
       <footer className="px-panel py-2 border-t border-line shrink-0 bg-canvas">
-        <span className="text-caption text-muted">PixelCraft Studio — {APP_VERSION}</span>
+        <span className="text-caption text-muted">Pixel Crafting MC — {APP_VERSION}</span>
       </footer>
 
       {showNewProjectDialog && (

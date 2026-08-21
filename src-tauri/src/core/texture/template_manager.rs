@@ -7,7 +7,7 @@ use tauri::{path::BaseDirectory, AppHandle, Manager};
 use super::super::error::{AppError, EntityKind};
 use super::template_model::{BuiltinTemplateEntry, CustomTemplateEntry, TemplateMeta, TemplatePixels};
 
-const APP_FOLDER_NAME: &str = "PixelCraft Studio";
+const APP_FOLDER_NAME: &str = "Pixel Crafting MC";
 const CUSTOM_TEMPLATES_FOLDER: &str = "Templates";
 const BUILTIN_MANIFEST_FILE: &str = "manifest.json";
 const CUSTOM_MANIFEST_FILE: &str = "custom_manifest.json";
@@ -30,7 +30,7 @@ impl TemplateManager {
             .map_err(|_| AppError::TemplateResourceDirNotFound)
     }
 
-    /// `Documentos/PixelCraft Studio/Templates/` - custom templates valem
+    /// `Documentos/Pixel Crafting MC/Templates/` - custom templates valem
     /// para o ambiente todo, disponiveis em qualquer projeto.
     fn custom_dir(app: &AppHandle) -> Result<PathBuf, AppError> {
         let documents = app

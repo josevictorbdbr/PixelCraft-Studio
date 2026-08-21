@@ -6,7 +6,7 @@ use tauri::{AppHandle, Manager};
 
 use super::error::AppError;
 
-const APP_FOLDER_NAME: &str = "PixelCraft Studio";
+const APP_FOLDER_NAME: &str = "Pixel Crafting MC";
 const SETTINGS_FILE_NAME: &str = "settings.json";
 
 /// Idiomas suportados pela interface. O frontend e a fonte da verdade para
@@ -49,7 +49,7 @@ impl Default for AppSettings {
 pub struct SettingsManager;
 
 impl SettingsManager {
-    /// Resolve `Documentos/PixelCraft Studio/settings.json`, criando a pasta
+    /// Resolve `Documentos/Pixel Crafting MC/settings.json`, criando a pasta
     /// pai caso ainda nao exista.
     fn path(app: &AppHandle) -> Result<PathBuf, AppError> {
         let documents = app

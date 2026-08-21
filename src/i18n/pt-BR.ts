@@ -46,6 +46,7 @@ export const ptBR: Dictionary = {
   templates: {},
   home: {
     newProjectButton: "Novo Projeto",
+    subtitle: "Crie texturas de Minecraft facilmente",
     projectsHeading: "PROJETOS",
     loadingProjects: "Carregando projetos...",
     openProjectButton: "Abrir Projeto",

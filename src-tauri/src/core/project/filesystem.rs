@@ -7,11 +7,11 @@ use tauri::{AppHandle, Manager};
 use super::super::error::AppError;
 use super::project_model::{ProjectManifest, DEFAULT_CATEGORIES};
 
-const APP_FOLDER_NAME: &str = "PixelCraft Studio";
+const APP_FOLDER_NAME: &str = "Pixel Crafting MC";
 const PROJECTS_FOLDER_NAME: &str = "Projects";
 const MANIFEST_FILE_NAME: &str = "project.json";
 
-/// Resolve `Documentos/PixelCraft Studio/Projects`, criando a pasta caso
+/// Resolve `Documentos/Pixel Crafting MC/Projects`, criando a pasta caso
 /// ainda nao exista (primeira execucao do programa).
 pub fn projects_root(app: &AppHandle) -> Result<PathBuf, AppError> {
     let documents = app

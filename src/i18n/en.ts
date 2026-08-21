@@ -49,6 +49,7 @@ export const en = {
   templates: {} as Record<string, string>,
   home: {
     newProjectButton: "New Project",
+    subtitle: "Easily create Minecraft textures",
     projectsHeading: "PROJECTS",
     loadingProjects: "Loading projects...",
     openProjectButton: "Open Project",

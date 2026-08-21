@@ -37,6 +37,7 @@ export const es: Dictionary = {
   templates: {},
   home: {
     newProjectButton: "Nuevo Proyecto",
+    subtitle: "Crea texturas de Minecraft fácilmente",
     projectsHeading: "PROYECTOS",
     loadingProjects: "Cargando proyectos...",
     openProjectButton: "Abrir Proyecto",
