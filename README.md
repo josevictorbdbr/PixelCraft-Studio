@@ -48,12 +48,16 @@ The application is currently focused on Windows and is designed to be simple, fa
 
 ---
 
-## Getting Started
+## Screenshots
 
-1. Download the latest `.exe` from the Releases page.
-2. Open Pixel Crafting MC.
-3. Create a new project.
-4. Create or import a texture.
-5. Choose a category for the texture.
-6. Edit your texture using the pixel art editor.
-7. Save or export the finished texture.
+### Texture Library
+
+Textures are organized by category, making it easier to manage large collections of Minecraft textures.
+
+![Texture Library](docs/screenshots/MainScreen.png)
+
+### Pixel Art Editor
+
+The editor provides a focused workspace for creating and editing pixel art.
+
+![Pixel Art Editor](docs/screenshots/Editor.png)
